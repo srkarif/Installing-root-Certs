@@ -1,0 +1,209 @@
+
+REM Certificate Full Installer for ABL
+
+@echo off
+goto check_Permissions
+
+:check_Permissions
+    echo Administrative permissions required. Detecting permissions...
+
+    net session >nul 2>&1
+    if %errorLevel% == 0 (
+        echo Success: Administrative permissions confirmed.
+    ) else (
+        echo Failure: Current permissions inadequate.
+    )
+
+REM Check Windows Version
+ver | find /i "version 10.0." > nul
+if %errorlevel%==0 goto ver_Win10
+ver | find /i "version 6.3." > nul
+if %errorlevel%==0 goto ver_Win8.1
+ver | find /i "version 6.2." > nul
+if %errorlevel%==0 goto ver_Win8
+ver | findstr /i "6\.1\." > nul
+IF %ERRORLEVEL%==0 goto ver_Win7
+ver | findstr /i "6\.0\." > nul
+IF %ERRORLEVEL%==0 goto ver_Vista
+ver | findstr /i "5\.2\." > nul
+IF %ERRORLEVEL%==0 goto ver_2003
+ver | findstr /i "5\.1\." > nul
+IF %ERRORLEVEL%==0 goto ver_XP
+ver | findstr /i "5\.0\." > nul
+IF %ERRORLEVEL%==0 goto ver_2000
+goto warn_and_exit
+
+:ver_Win10
+:Run Windows 10 specific commands here
+REM echo OS Version: Windows 10 (debug line)
+copy %tmp%\certadm.dll %SystemRoot%\System32 > NUL
+
+
+del /F %tmp%\certutil.exe > NUL
+del /F %tmp%\certadm.dll > NUL
+del /F %tmp%\certcli.dll > NUL
+
+
+:ver_Win8.1
+:Run Windows 8.1 specific commands here
+REM echo OS Version: Windows 8 (debug line)
+copy %tmp%\certutil.exe %SystemRoot%\System32 > NUL
+copy %tmp%\certadm.dll %SystemRoot%\System32 > NUL
+copy %tmp%\certcli.dll %SystemRoot%\System32 > NUL
+
+del /F %tmp%\certutil.exe > NUL
+del /F %tmp%\certadm.dll > NUL
+del /F %tmp%\certcli.dll > NUL
+
+goto end
+
+:ver_Win8
+:Run Windows 8 specific commands here
+REM echo OS Version: Windows 8 (debug line)
+copy %tmp%\certutil.exe %SystemRoot%\System32 > NUL
+copy %tmp%\certadm.dll %SystemRoot%\System32 > NUL
+copy %tmp%\certcli.dll %SystemRoot%\System32 > NUL
+
+del /F %tmp%\certutil.exe > NUL
+del /F %tmp%\certadm.dll > NUL
+del /F %tmp%\certcli.dll > NUL
+
+goto end
+
+:ver_Win7
+:Run Windows 7 specific commands here
+REM echo OS Version: Windows 7 (debug line)
+
+del /F %tmp%\certutil.exe > NUL
+del /F %tmp%\certadm.dll > NUL
+del /F %tmp%\certcli.dll > NUL
+
+goto end
+
+:ver_Vista
+:Run Windows Vista specific commands here
+REM echo OS Version: Windows Vista (debug line)
+
+del /F %tmp%\certutil.exe > NUL
+del /F %tmp%\certadm.dll > NUL
+del /F %tmp%\certcli.dll > NUL
+
+goto end
+
+:ver_2003
+:Run Windows Server 2003 specific commands here
+REM echo OS Version: Windows Server 2003 (debug line)
+
+del /F %tmp%\certutil.exe > NUL
+del /F %tmp%\certadm.dll > NUL
+del /F %tmp%\certcli.dll > NUL
+
+goto end
+
+
+
+:ver_XP
+:Run Windows XP specific commands here
+REM echo OS Version: Windows XP (debug line)
+
+copy %tmp%\certutil.exe %SystemRoot%\System32 > NUL
+copy %tmp%\certadm.dll %SystemRoot%\System32 > NUL
+copy %tmp%\certcli.dll %SystemRoot%\System32 > NUL
+
+del /F %tmp%\certutil.exe > NUL
+del /F %tmp%\certadm.dll > NUL
+del /F %tmp%\certcli.dll > NUL
+
+goto end
+
+
+
+:ver_2000
+:Run Windows 2000 specific commands here
+REM echo OS Version: Windows 2000 (debug line)
+goto end
+
+:warn_and_exit
+REM echo Machine OS cannot be determined.
+echo set WshShell = WScript.CreateObject("WScript.Shell") > %tmp%\tmp.vbs
+echo WScript.Quit (WshShell.Popup( "Please use updated Version of Operating System" ,10 ,"dataedge CA",0)) >> %tmp%\tmp.vbs
+cscript /nologo %tmp%\tmp.vbs
+if %errorlevel%==1 (
+  echo OK
+) else (
+  echo The Message timed out.
+)
+del %tmp%\tmp.vbs
+Exit
+
+:end 
+
+@echo off
+REM certutil.exe -addstore -f -enterprise -user root "RootCABangladesh.crt"
+certutil.exe -addstore -f -enterprise -user root "Root CA Bangladesh 2013.cer"
+
+
+REM certutil.exe -addstore -f CA "dataedge_CA.cer"
+certutil.exe -addstore -f CA "dataedge CA 2013.cer"
+
+REM certutil.exe -addstore -f CA "dataedge_sub-CA_for_Class_1.cer"
+certutil.exe -addstore -f CA "dataedge sub-CA for Class 1 Certificate.cer"
+certutil.exe -addstore -f CA "dataedge sub-CA for Class 1 Certificate 2015.cer"
+
+
+REM certutil.exe -addstore -f CA "dataedge_sub-CA_for_Class_2.cer"
+certutil.exe -addstore -f CA "dataedge sub-CA for Class 2 Certificate.cer"
+certutil.exe -addstore -f CA "dataedge sub-CA for Class 2 Certificate 2015.cer"
+
+REM certutil.exe -addstore -f CA "dataedge_sub-CA_for_Class_3.cer"
+certutil.exe -addstore -f CA "dataedge sub-CA for Class 3 Certificate.cer"
+certutil.exe -addstore -f CA "dataedge sub-CA for Class 3 Certificate 2015.cer"
+certutil.exe -addstore -f CA "dataedge sub-CA for Class 3 SSL Certificate 2015.cer"
+certutil.exe -addstore -f CA "dataedge sub-CA for Class 3 Wildcard SSL Certificate 2015.cer"
+
+echo Done!
+
+
+echo set WshShell = WScript.CreateObject("WScript.Shell") > %tmp%\tmp.vbs
+echo WScript.Quit (WshShell.Popup( "Installation Completed!  Thanks for using data edge certificate" ,10 ,"dataedge CA",0)) >> %tmp%\tmp.vbs
+cscript /nologo %tmp%\tmp.vbs
+if %errorlevel%==1 (
+echo OK
+) else (
+echo The Message timed out.
+)
+del %tmp%\tmp.vbs
+
+REM Below codes are optional:
+
+REM cd /d %programfiles%/Mozilla Firefox
+REM 	if %ERRORLEVEL%==1 start iexplore http://www.data-edge.com/
+
+REM	if %ERRORLEVEL%==0 start firefox http://www.data-edge.com/
+
+
+REM cd %programfiles(x86)%/Mozilla Firefox
+
+REM	if ERRORLEVEL  1 goto Redirection_IE
+
+REM	if ERRORLEVEL 0 goto redirection_firefox
+	
+
+
+REM :Redirection_firefox
+REM :Run firefox specific commands here
+
+REM start firefox http://www.data-edge.com/			
+
+rem exit /b 0
+
+
+rem :Redirection_IE
+rem :Run Internet Explorer specific commands here
+rem start iexplore http://www.data-edge.com/
+
+rem exit /b 0	
+
+
+REM start iexplore http://www.dataedgeid.com/
+REM start iexplore https://rootcrt.cca.gov.bd
